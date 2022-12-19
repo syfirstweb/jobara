@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-css.css') }}">
+    <script type="text/javascript">
+        function idsearch() {
+            var nameExp = /^[가-힣]{2,4}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/; // 이름 유효성 검사
+            var emailExp = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/; // 이메일 유효성 검사
+            let username = $('#user_name').val();
+            let useremail = $('#user_email').val();
+            let userphone = $('#user_phone').val();
+
+
+            if (!nameExp.test(username)) {
+                alert("이름을 확인해주세요.");
+                return false;
+            }
+
+            if (emailExp.test(useremail) == false) {
+                alert("이메일 형식이 올바르지 않습니다.")
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/accountfind_proc",
+                data: {
+                    user_name_give: username,
+                    user_email_give: useremail,
+                    user_phone_give: userphone
+                },
+                // 파이썬으로 보내는 값들
+                success: function (
+                    response) { // 성공했을때 메세지띄울거임 response는 내장객체가아니라 그냥 내가 보기 편하게 선언하는 이름임. msg도 마찬가지.
+                    alert(response["msg"]);
+                    window.close();
+                },
+                error: function (error) {
+                    alert("일치하는 회원정보가 없습니다.");
+                }
+
+            })
+
+        }
+    </script>
+</head>
+
+<body class="find-body">
+    <form class="find_form" name="find" action="/accountfind_proc">
+        <div class="find-wrap">
+            <div class="search-title">
+                <h3>아이디 찾기</h3>
+                <p>회원님의 정보와 이메일을 확인합니다.</p>
+            </div>
+
+            <section class="form-search">
+                <div class="find-username">
+                    <label>이름</label>
+                    <input type="text" id="user_name" placeholder="등록한 이름">
+                    <br>
+                </div>
+                <p>
+                    <div class="find-useremail">
+                        <label>이메일</label>
+                        <input type="text" id="user_email" placeholder="이메일 주소">
+                    </div>
+                    <br>
+                    <div class="find-userphone">
+                        <label>휴대폰번호</label>
+                        <input type="text" id="user_phone" placeholder="-를 제외한 휴대폰번호">
+                    </div>
+                    <br>
+            </section>
+            <div class="btnSearch">
+                <div>
+                    <input type="button" name="enter" value="찾기" onClick="idsearch()">
+                    <input type="button" name="cancle" value="닫기" onClick="self.close()">
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>
